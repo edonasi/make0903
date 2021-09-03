@@ -151,19 +151,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Aseets\Programs\Audio.cpp" />
-    <ClCompile Include="Aseets\Programs\AudioMult.cpp" />
-    <ClCompile Include="Aseets\Programs\Circle.cpp" />
-    <ClCompile Include="Aseets\Programs\Cnt.cpp" />
-    <ClCompile Include="Aseets\Programs\Coll.cpp" />
-    <ClCompile Include="Aseets\Programs\Com.cpp" />
-    <ClCompile Include="Aseets\Programs\Fade.cpp" />
-    <ClCompile Include="Aseets\Programs\Fps.cpp" />
-    <ClCompile Include="Aseets\Programs\GameFlag.cpp" />
-    <ClCompile Include="Aseets\Programs\GameScene.cpp" />
-    <ClCompile Include="Aseets\Programs\Img.cpp" />
-    <ClCompile Include="Aseets\Programs\ImgDiv.cpp" />
-    <ClCompile Include="Aseets\Programs\Keyboard.cpp" />
+    <ClCompile Include="Aseets\Programs\FPS.cpp" />
+    <ClCompile Include="Aseets\Programs\keyboard.cpp" />
+    <ClCompile Include="Aseets\Programs\main.cpp" />
     <ClCompile Include="Aseets\Programs\Memo\CppClassFormatMemo.cpp" />
     <ClCompile Include="Aseets\Programs\Memo\CppFormatMemo.cpp" />
     <ClCompile Include="Aseets\Programs\Memo\CppSingleFormatMemo.cpp" />
@@ -171,31 +161,29 @@
     <ClCompile Include="Aseets\Programs\Memo\HppClassFormatMemo.cpp" />
     <ClCompile Include="Aseets\Programs\Memo\HppFormatMemo.cpp" />
     <ClCompile Include="Aseets\Programs\Memo\HppSingleFormatMemo.cpp" />
-    <ClCompile Include="Aseets\Programs\Mouse.cpp" />
-    <ClCompile Include="Aseets\Programs\Movie.cpp" />
-    <ClCompile Include="Aseets\Programs\Win.cpp" />
-    <ClCompile Include="Aseets\Programs\WinMain.cpp" />
-    <ClCompile Include="Aseets\Programs\XY.cpp" />
+    <ClCompile Include="Aseets\Programs\mouse.cpp" />
+    <ClCompile Include="Aseets\Programs\shape.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Aseets\Programs\Audio.hpp" />
-    <ClInclude Include="Aseets\Programs\AudioMult.hpp" />
-    <ClInclude Include="Aseets\Programs\Circle.hpp" />
-    <ClInclude Include="Aseets\Programs\Cnt.hpp" />
-    <ClInclude Include="Aseets\Programs\Coll.hpp" />
-    <ClInclude Include="Aseets\Programs\Com.hpp" />
-    <ClInclude Include="Aseets\Programs\Fade.hpp" />
-    <ClInclude Include="Aseets\Programs\Fps.hpp" />
-    <ClInclude Include="Aseets\Programs\GameFlag.hpp" />
-    <ClInclude Include="Aseets\Programs\GameScene.hpp" />
-    <ClInclude Include="Aseets\Programs\Img.hpp" />
-    <ClInclude Include="Aseets\Programs\ImgDiv.hpp" />
-    <ClInclude Include="Aseets\Programs\IncludeFile.hpp" />
-    <ClInclude Include="Aseets\Programs\Keyboard.hpp" />
-    <ClInclude Include="Aseets\Programs\Mouse.hpp" />
-    <ClInclude Include="Aseets\Programs\Movie.hpp" />
-    <ClInclude Include="Aseets\Programs\Win.hpp" />
-    <ClInclude Include="Aseets\Programs\XY.hpp" />
+    <ClInclude Include="Aseets\Programs\FPS.h" />
+    <ClInclude Include="Aseets\Programs\game.h" />
+    <ClInclude Include="Aseets\Programs\keyboard.h" />
+    <ClInclude Include="Aseets\Programs\mouse.h" />
+    <ClInclude Include="Aseets\Programs\shape.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Aseets\Icons\game.ico" />
+    <Image Include="Aseets\Images\baku1.png" />
+    <Image Include="Aseets\Images\charachip.png" />
+    <Image Include="Aseets\Images\player.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="Aseets\Audios\ブリキのPARADE.mp3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Aseets\Icons\resource.rc" />
+    <ResourceCompile Include="make0903.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
