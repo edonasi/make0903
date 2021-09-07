@@ -92,11 +92,19 @@ VOID DrawDivImageChara(DIVIMAGE* image);		//分割画像の描画
 
 //サンプルの素材
 IMAGE sampleImg;
-DIVIMAGE sampleDivImg;
-DIVIMAGE samplePlayerImg;
+DIVIMAGE sampleDivImg;		//爆発
+DIVIMAGE samplePlayerImg;	//キャラクター
 MUKI muki = muki_shita;		//サンプル向き
 
-AUDIO sampleBGM;
+//猫分割画像
+DIVIMAGE catDivImg;
+MUKI catMuki = muki_shita;
+int catStartX = 32;
+int catStartY = 32;
+
+AUDIO titleBGM;
+AUDIO playBGM;
+AUDIO endBGM;
 
 // プログラムは WinMain から始まります
 int WINAPI WinMain(
@@ -231,8 +239,13 @@ BOOL GameLoad(VOID)
 	//サンプル分割画像を読み込み
 	if (LoadImageDivMem(&samplePlayerImg, ".\\Aseets\\Images\\charachip.png", 3, 4) == FALSE) { return FALSE; }
 
-	//サンプルBGMを読み込み
-	if (LoadAudio(&sampleBGM, ".\\Aseets\\Audios\\ブリキのPARADE.mp3", 128, DX_PLAYTYPE_LOOP) == FALSE) { return FALSE; }
+	//猫分割画像を読み込み
+	if (LoadImageDivMem(&catDivImg, "./Aseets/Images/pipo-charachip010a.png", 3, 4) == FALSE) { return FALSE; }
+
+	//BGMを読み込み
+	if (LoadAudio(&titleBGM, ".\\Aseets\\Audios\\ブリキのPARADE.mp3", 128, DX_PLAYTYPE_LOOP) == FALSE) { return FALSE; }
+	if (LoadAudio(&playBGM, ".\\Aseets\\Audios\\PlayBgm.mp3", 128, DX_PLAYTYPE_LOOP) == FALSE) { return FALSE; }
+	if (LoadAudio(&endBGM, ".\\Aseets\\Audios\\EndBgm.mp3", 128, DX_PLAYTYPE_LOOP) == FALSE) { return FALSE; }
 
 	return TRUE;	//全て読み込みた！
 }
@@ -251,8 +264,11 @@ VOID GameDelete(VOID)
 	//サンプル分割画像を削除
 	for (int i = 0; i < samplePlayerImg.DivMax; i++) { DeleteGraph(samplePlayerImg.handle[i]); }
 
+	//猫分割画像を削除
+	for (int i = 0; i < catDivImg.DivMax; i++) { DeleteGraph(catDivImg.handle[i]); }
+
 	//サンプル音楽を削除
-	DeleteMusicMem(sampleBGM.handle);
+	DeleteMusicMem(titleBGM.handle);
 
 	return;
 }
@@ -263,6 +279,9 @@ VOID GameDelete(VOID)
 /// <param name=""></param>
 VOID GameInit(VOID)
 {
+	//猫画像初期位置初期化
+	catDivImg.x = catStartX;
+	catDivImg.y = catStartY;
 
 	//ゲーム内時間リセット
 	ResetGameTime();
@@ -307,13 +326,16 @@ VOID TitleProc(VOID)
 		//ゲームの初期化
 		GameInit();
 
+		//BGMの停止
+		StopAudio(&titleBGM);
+
 		//プレイ画面に切り替え
 		ChangeScene(GAME_SCENE_PLAY);
 
 		return;
 	}
 
-	PlayAudio(sampleBGM);	//BGMを鳴らす
+	PlayAudio(titleBGM);	//BGMを鳴らす
 
 	//プレイヤーの動作サンプル
 	{
@@ -325,8 +347,19 @@ VOID TitleProc(VOID)
 		CollUpdateDivImage(&samplePlayerImg);	//当たり判定の更新
 	}
 
+	//猫動作
+	catMuki = muki_none;
+	if (KeyDown(KEY_INPUT_W)) { muki = muki_ue; catDivImg.y--; }
+	else if (KeyDown(KEY_INPUT_S)) { muki = muki_shita; catDivImg.y++; }
+	if (KeyDown(KEY_INPUT_A)) { muki = muki_hidari; catDivImg.x--; }
+	else if (KeyDown(KEY_INPUT_D)) { muki = muki_migi; catDivImg.x++; }
+	CollUpdateDivImage(&catDivImg);	//当たり判定の更新
+
 	return;
 }
+
+const float REST_TIME = 30.0f;
+
 
 /// <summary>
 /// タイトル画面の描画
@@ -342,8 +375,15 @@ VOID TitleDraw(VOID)
 		DrawDivImageChara(&samplePlayerImg);//サンプル分割画像の描画
 	}
 
+	//猫描画
+	DrawDivImageChara(&catDivImg);
+
 	//ゲーム内時間
 	DrawFormatString(500, 50, GetColor(0, 0, 0), "TIME:%3.2f", GetGameTime());
+
+	//制限時間を表示
+	DrawFormatString(500, 90, GetColor(0, 0, 0), "DOWN:%3.2f", REST_TIME-GetGameTime());
+	
 
 	//現在の日付と時刻
 	DrawFormatString(500, 70, GetColor(0, 0, 0), "DATE:%4d/%2d/%2d %2d:%2d:%2d", fps.NowDataTime.Year, fps.NowDataTime.Mon, fps.NowDataTime.Day, fps.NowDataTime.Hour, fps.NowDataTime.Min, fps.NowDataTime.Sec);
@@ -370,10 +410,14 @@ VOID PlayProc(VOID)
 {
 	if (KeyClick(KEY_INPUT_RETURN) == TRUE)
 	{
+		StopAudio(&playBGM);	//bgm停止
+
 		//プレイ画面に切り替え
 		ChangeScene(GAME_SCENE_END);
 		return;
 	}
+
+	PlayAudio(playBGM);	//bgm再生
 
 	return;
 }
@@ -406,11 +450,15 @@ VOID EndProc(VOID)
 {
 	if (KeyClick(KEY_INPUT_RETURN) == TRUE)
 	{
+		StopAudio(&endBGM);	//bgm停止
+
 		//タイトル画面に切り替え
 		ChangeScene(GAME_SCENE_TITLE);
 
 		return;
 	}
+
+	PlayAudio(endBGM);	//bgm再生
 
 	return;
 }
