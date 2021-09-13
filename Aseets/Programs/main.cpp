@@ -4,6 +4,7 @@
 #include "FPS.h"		//FPSの処理
 #include "mouse.h"		//マウスの処理
 #include "shape.h"		//図形の処理
+#include "Font.h"
 
 //独自のマクロ定義
 
@@ -137,6 +138,9 @@ int WINAPI WinMain(
 	//最初のシーンは、タイトル画面から
 	GameScene = GAME_SCENE_TITLE;
 
+	//フォントの追加
+	if (FontAdd() == FALSE) { return FALSE; }
+
 	//ゲーム読み込み
 	if (!GameLoad())
 	{
@@ -215,6 +219,9 @@ int WINAPI WinMain(
 		ScreenFlip();	//ダブルバッファリングした画面を描画
 	}
 
+	//フォント削除
+	FontRemove();
+
 	//データ削除
 	GameDelete();
 
@@ -247,6 +254,9 @@ BOOL GameLoad(VOID)
 	if (LoadAudio(&playBGM, ".\\Aseets\\Audios\\PlayBgm.mp3", 128, DX_PLAYTYPE_LOOP) == FALSE) { return FALSE; }
 	if (LoadAudio(&endBGM, ".\\Aseets\\Audios\\EndBgm.mp3", 128, DX_PLAYTYPE_LOOP) == FALSE) { return FALSE; }
 
+	//フォント作成
+	if (FontCreate() == FALSE) { return FALSE; }
+
 	return TRUE;	//全て読み込みた！
 }
 
@@ -269,6 +279,9 @@ VOID GameDelete(VOID)
 
 	//サンプル音楽を削除
 	DeleteMusicMem(titleBGM.handle);
+
+	//メモリ内のフォントデータ削除
+	FontDelete();
 
 	return;
 }
@@ -387,6 +400,16 @@ VOID TitleDraw(VOID)
 
 	//現在の日付と時刻
 	DrawFormatString(500, 70, GetColor(0, 0, 0), "DATE:%4d/%2d/%2d %2d:%2d:%2d", fps.NowDataTime.Year, fps.NowDataTime.Mon, fps.NowDataTime.Day, fps.NowDataTime.Hour, fps.NowDataTime.Min, fps.NowDataTime.Sec);
+
+	//フォントのサンプル
+	DrawStringToHandle(100, 100, "MS　ゴシックだよ", GetColor(0, 0, 0), sampleFont1.handle);
+
+	//フォントサンプル　数値を出したいとき
+	DrawFormatStringToHandle(200, 200, GetColor(0, 0, 0), sampleFont2.handle, "残り：%3.2f", 30.0f - GetGameTime());
+
+	//ドットフォントサンプル
+	DrawFormatStringToHandle(302, 302, GetColor(0, 0, 0), reggaeFont.handle, "%s", reggaeFont.name);	//影
+	DrawFormatStringToHandle(300, 300, GetColor(255, 0, 0), reggaeFont.handle, "%s", reggaeFont.name);
 
 	DrawString(0, 0, "タイトル画面", GetColor(0, 0, 0));
 	return;
@@ -898,7 +921,7 @@ VOID DrawDivImageChara(DIVIMAGE* image)
 				if (image->nowIndex >= 9 && image->nowIndex <= 11) { image->nowIndex = 10; }
 				if (image->nowIndex >= 0 && image->nowIndex <= 2) { image->nowIndex = 1; }
 			}
-
+			
 			image->AnimCnt = 0;	//カウンタ0クリア
 		}
 	}
