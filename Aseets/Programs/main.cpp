@@ -408,7 +408,7 @@ VOID TitleDraw(VOID)
 	DrawFormatStringToHandle(200, 200, GetColor(0, 0, 0), sampleFont2.handle, "残り：%3.2f", 30.0f - GetGameTime());
 
 	//ドットフォントサンプル
-	DrawFormatStringToHandle(302, 302, GetColor(0, 0, 0), reggaeFont.handle, "%s", reggaeFont.name);	//影
+	DrawFormatStringToHandle(303, 303, GetColor(0, 0, 0), reggaeFont.handle, "%s", reggaeFont.name);	//影
 	DrawFormatStringToHandle(300, 300, GetColor(255, 0, 0), reggaeFont.handle, "%s", reggaeFont.name);
 
 	DrawString(0, 0, "タイトル画面", GetColor(0, 0, 0));
