@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Aseets\Programs\Data.cpp" />
     <ClCompile Include="Aseets\Programs\Font.cpp" />
     <ClCompile Include="Aseets\Programs\FPS.cpp" />
     <ClCompile Include="Aseets\Programs\keyboard.cpp" />
@@ -166,6 +167,7 @@
     <ClCompile Include="Aseets\Programs\shape.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Aseets\Programs\Data.h" />
     <ClInclude Include="Aseets\Programs\Font.h" />
     <ClInclude Include="Aseets\Programs\FPS.h" />
     <ClInclude Include="Aseets\Programs\game.h" />
