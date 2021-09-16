@@ -1,9 +1,13 @@
 #include "Data.h"
+#include "game.h"
+#include "shape.h"
 
 /*
 http://www.isl.ne.jp/pcsp/beginC/C_Language_16.html
 https://9cguide.appspot.com/17-01.html
 */
+
+CHARA_DATA_SAMPLE enemy[ENEMY_MAX];	//敵データ
 
 /// <summary>
 /// SCVファイルを読み込む
@@ -50,9 +54,11 @@ BOOL LoadScvChara(const char* path, CHARA_DATA_SAMPLE* chara, int dataMax, BOOL 
 			&(chara + loopCnt)->hp,
 			&(chara + loopCnt)->atk,
 			&(chara + loopCnt)->def,
+			&(chara + loopCnt)->rak,
 			&(chara + loopCnt)->hpMax,
 			&(chara + loopCnt)->atkMax,
-			&(chara + loopCnt)->defMax
+			&(chara + loopCnt)->defMax,
+			&(chara + loopCnt)->rakMax
 			);
 
 		//次のデータへ
