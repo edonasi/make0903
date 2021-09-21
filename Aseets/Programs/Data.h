@@ -20,6 +20,20 @@
 //敵データ
 #define ENEMY_MAX 8
 
+//エラーメッセージ
+#define SCORE_CREATE_ERR_TITLE TEXT("スコアデータ作成エラー")
+#define SCORE_LOAD_ERR_TITLE TEXT("スコアデータ読み込みエラー")
+#define SCORE_CREATE_TITLE TEXT("スコアデータ作成OK")
+#define SCORE_SAVE_TITLE TEXT("スコアデータ保存OK")
+#define SCORE_DELETE_TITLE TEXT("スコアデータ削除OK")
+#define SCORE_DELETE_ERR_TITLE TEXT("スコアデータ削除エラー")
+
+//スコアデータのパス(拡張子を変なものにすることでチート対策？)
+#define SCORE_DATA_PATH TEXT("./Data/score.a")
+
+//データの書式指定子
+#define SCORE_DATA_FORMAT TEXT("%[^,],%d,%[^,],%d,%[^,],%d")
+
 //キャラデータ構造体(サンプル)
 struct CHARA_DATA_SAMPLE
 {
@@ -39,6 +53,32 @@ struct CHARA_DATA_SAMPLE
 	int rakMax;				//最大幸運
 };
 
-extern CHARA_DATA_SAMPLE enemy[ENEMY_MAX];
+//スコアデータ構造体(サンプル)
+struct SCORE_DATA_SAMPLE
+{
+	char path[PATH_MAX];	//スコアデータがあるパス
 
+	char name1[STR_MAX];	//名前1
+	int score1;				//スコア1
+
+	char name2[STR_MAX];	//名前2
+	int score2;				//スコア2
+
+	char name3[STR_MAX];	//名前3
+	int score3;				//スコア3
+};
+
+//変数
+extern CHARA_DATA_SAMPLE enemy[ENEMY_MAX];	//敵データ
+extern SCORE_DATA_SAMPLE scoreData;			//スコアデータ
+extern SCORE_DATA_SAMPLE scoreDataInit;		//スコアデータ(初期化用)
+
+
+//関数
 extern BOOL LoadScvChara(const char* path, CHARA_DATA_SAMPLE* chara, int dataMax, BOOL isHeader);
+extern BOOL LoadScoreData(const char* path, SCORE_DATA_SAMPLE* score, BOOL isHeader = FALSE);
+extern BOOL CreateScoreData(VOID);
+extern BOOL SaveScoreData(VOID);
+extern BOOL DeleteScoreData(VOID);
+extern const char* GetScoreDataPath(VOID);
+extern VOID SetScoreDataPath(const char* path);
