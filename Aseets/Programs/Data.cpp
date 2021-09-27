@@ -121,21 +121,16 @@ BOOL LoadScoreData(const char* path, SCORE_DATA_SAMPLE* score, BOOL isHeader = F
 	}
 
 	//実際にデータを格納する
-	while (isEOF != EOF)	//ファイルの最後ではないとき繰り返す
-	{
-		//csvのデータの1行分を読み取る
-		//fp = カーソルのイメージ
-		isEOF = fscanf_s(
-			fp,
-			SCORE_DATA_FORMAT,
-			&(score)->name1, STR_MAX,
-			&(score)->score1,
-			&(score)->name2, STR_MAX,
-			&(score)->score2,
-			&(score)->name3, STR_MAX,
-			&(score)->score3
-		);
-	}
+	isEOF = fscanf_s(
+		fp,
+		SCORE_DATA_FORMAT,	//データが「一行=レコード」で書かれているのがポイント！
+		&(score)->name1, STR_MAX,	//文字列を読み込むときは、次の引数で文字列最大数を指定する
+		&(score)->score1,
+		&(score)->name2, STR_MAX,	//文字列を読み込むときは、次の引数で文字列最大数を指定する
+		&(score)->score2,
+		&(score)->name3, STR_MAX,	//文字列を読み込むときは、次の引数で文字列最大数を指定する
+		&(score)->score3
+	);
 
 	fclose(fp);	//ファイルを閉じる
 
@@ -200,9 +195,9 @@ BOOL SaveScoreData(VOID)
 	//空のスコアデータを書き込み
 	fprintf_s(
 		creFp, "%s,%d,%s,%d,%s,%d",
-		scoreDataInit.name1, scoreDataInit.score1,
-		scoreDataInit.name2, scoreDataInit.score2,
-		scoreDataInit.name3, scoreDataInit.score3
+		scoreData.name1, scoreData.score1,
+		scoreData.name2, scoreData.score2,
+		scoreData.name3, scoreData.score3
 	);
 
 	//スコアデータを閉じる

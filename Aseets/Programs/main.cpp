@@ -259,7 +259,12 @@ BOOL GameLoad(VOID)
 	if (FontCreate() == FALSE) { return FALSE; }
 
 	////サンプル的データを読み込み
-	if (LoadScvChara(CSV_PATH_ENEMY, &enemy[0], ENEMY_MAX, TRUE) == FALSE) { return FALSE; }
+	//if (LoadCSVChara(CSV_PATH_ENEMY, &enemy[0], ENEMY_MAX, TRUE) == FALSE) { return FALSE; }
+	if (LoadScvChara(CSV_PATH_ENEMY, &enemy[0],ENEMY_MAX, TRUE) == FALSE) { return FALSE; }
+
+	//サンプルスコアデータを読み込み
+	//if (LoadScoreData(SCORE_DATA_PATH, &score_data, TRUE) == FALSE) { return FALSE; }
+	if (LoadScoreData(SCORE_DATA_PATH, &scoreData, TRUE) == FALSE) { return FALSE; }
 
 	return TRUE;	//全て読み込みた！
 }
@@ -335,6 +340,24 @@ VOID Title(VOID)
 /// </summary>
 VOID TitleProc(VOID)
 {
+	//セーブデータ処理サンプル
+	{
+	//セーブデータ削除サンプル
+		if (KeyDown(KEY_INPUT_Q) == TRUE) { DeleteScoreData(); }
+
+		//セーブデータ保存サンプル
+		if (KeyDown(KEY_INPUT_E) == TRUE) {
+		//スコアデータを適当に設定
+			//score_data.Score1 = (int)GetGameTime();
+			scoreData.score1 = (int)GetGameTime();
+
+			//スコアの並べ替え処理
+
+			//スコアデータの保存
+			SaveScoreData();
+		}
+	}
+
 	if (KeyClick(KEY_INPUT_RETURN) == TRUE)
 	{
 		//シーン切り替え
@@ -418,14 +441,14 @@ VOID TitleDraw(VOID)
 	//scv読み込んだデータを描画
 	for (int i = 0; i < ENEMY_MAX; i++) 
 	{
-		int x = 300;
-		DrawFormatString(x, 500 + i * 20, GetColor(0, 0, 0), "%d", enemy[i].no);			//番号
-		x += 30;
-		DrawFormatString(x, 500 + i * 20, GetColor(0, 0, 0), "%s", enemy[i].name);		//名前
-		x += 150;
-		DrawFormatString(x, 500 + i * 20, GetColor(0, 0, 0), "%d", enemy[i].hp);		//hp
-		x += 30;
-		DrawFormatString(x, 500 + i * 20, GetColor(0, 0, 0), "%d", enemy[i].atk);		//hp
+		//int x = 300;
+		//DrawFormatString(x, 500 + i * 20, GetColor(0, 0, 0), "%d", enemy[i].No);			//番号
+		//x += 30;
+		//DrawFormatString(x, 500 + i * 20, GetColor(0, 0, 0), "%s", enemy[i].Name);		//名前
+		//x += 150;
+		//DrawFormatString(x, 500 + i * 20, GetColor(0, 0, 0), "%d", enemy[i].HP);		//hp
+		//x += 30;
+		//DrawFormatString(x, 500 + i * 20, GetColor(0, 0, 0), "%d", enemy[i].ATK);		//hp
 	}
 
 	DrawString(0, 0, "タイトル画面", GetColor(0, 0, 0));

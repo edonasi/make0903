@@ -29,7 +29,7 @@
 #define SCORE_DELETE_ERR_TITLE TEXT("スコアデータ削除エラー")
 
 //スコアデータのパス(拡張子を変なものにすることでチート対策？)
-#define SCORE_DATA_PATH TEXT("./Data/score.a")
+#define SCORE_DATA_PATH TEXT("./Aseets/Data/questionTest")
 
 //データの書式指定子
 #define SCORE_DATA_FORMAT TEXT("%[^,],%d,%[^,],%d,%[^,],%d")
@@ -76,7 +76,7 @@ extern SCORE_DATA_SAMPLE scoreDataInit;		//スコアデータ(初期化用)
 
 //関数
 extern BOOL LoadScvChara(const char* path, CHARA_DATA_SAMPLE* chara, int dataMax, BOOL isHeader);
-extern BOOL LoadScoreData(const char* path, SCORE_DATA_SAMPLE* score, BOOL isHeader = FALSE);
+extern BOOL LoadScoreData(const char* path, SCORE_DATA_SAMPLE* score, BOOL isHeader);
 extern BOOL CreateScoreData(VOID);
 extern BOOL SaveScoreData(VOID);
 extern BOOL DeleteScoreData(VOID);
