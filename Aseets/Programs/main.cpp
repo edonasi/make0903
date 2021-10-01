@@ -108,6 +108,8 @@ AUDIO titleBGM;
 AUDIO playBGM;
 AUDIO endBGM;
 
+MAP_DATA_SAMPLE map1_a;	//マップ1
+
 // プログラムは WinMain から始まります
 int WINAPI WinMain(
 	HINSTANCE hInstance,
@@ -266,6 +268,19 @@ BOOL GameLoad(VOID)
 	//if (LoadScoreData(SCORE_DATA_PATH, &score_data, TRUE) == FALSE) { return FALSE; }
 	if (LoadScoreData(SCORE_DATA_PATH, &scoreData, TRUE) == FALSE) { return FALSE; }
 
+	//サンプルマップデータを読み込み
+	if (LoadCsvMap(
+		IMG_PATH_MAP1,
+		CSV_PATH_MAP1_DOWN,
+		CSV_PATH_MAP1_CENTER,
+		CSV_PATH_MAP1_CENTER_COLLIDER,
+		CSV_PATH_MAP1_UP,
+		&map1_a,
+		MAP1_YOKO_DIV, MAP1_TATE_DIV
+	) == FALSE) {
+		return FALSE;
+	}
+
 	return TRUE;	//全て読み込みた！
 }
 
@@ -377,15 +392,15 @@ VOID TitleProc(VOID)
 
 	PlayAudio(titleBGM);	//BGMを鳴らす
 
-	//プレイヤーの動作サンプル
-	{
-		muki = muki_none;	//最初は向きを無しにする
-		if (KeyDown(KEY_INPUT_W)) { muki = muki_ue; samplePlayerImg.y--; }
-		else if (KeyDown(KEY_INPUT_S)) { muki = muki_shita; samplePlayerImg.y++; }
-		if (KeyDown(KEY_INPUT_A)) { muki = muki_hidari; samplePlayerImg.x--; }
-		else if (KeyDown(KEY_INPUT_D)) { muki = muki_migi; samplePlayerImg.x++; }
-		CollUpdateDivImage(&samplePlayerImg);	//当たり判定の更新
-	}
+	////プレイヤーの動作サンプル
+	//{
+	//	muki = muki_none;	//最初は向きを無しにする
+	//	if (KeyDown(KEY_INPUT_W)) { muki = muki_ue; samplePlayerImg.y--; }
+	//	else if (KeyDown(KEY_INPUT_S)) { muki = muki_shita; samplePlayerImg.y++; }
+	//	if (KeyDown(KEY_INPUT_A)) { muki = muki_hidari; samplePlayerImg.x--; }
+	//	else if (KeyDown(KEY_INPUT_D)) { muki = muki_migi; samplePlayerImg.x++; }
+	//	CollUpdateDivImage(&samplePlayerImg);	//当たり判定の更新
+	//}
 
 	//猫動作
 	catMuki = muki_none;
@@ -394,6 +409,22 @@ VOID TitleProc(VOID)
 	if (KeyDown(KEY_INPUT_A)) { muki = muki_hidari; catDivImg.x--; }
 	else if (KeyDown(KEY_INPUT_D)) { muki = muki_migi; catDivImg.x++; }
 	CollUpdateDivImage(&catDivImg);	//当たり判定の更新
+
+	//マップの当たり判定を考慮
+	muki = muki_none;	//最初は向きをなしにする
+	DIVIMAGE dummy = samplePlayerImg;	//当たり判定のダミーを作っておく
+
+	//当たり判定の移動
+	if (KeyDown(KEY_INPUT_W) == TRUE) { muki = muki_ue; dummy.y--; }
+	if (KeyDown(KEY_INPUT_S) == TRUE) { muki = muki_shita; dummy.y++; }
+	if (KeyDown(KEY_INPUT_A) == TRUE) { muki = muki_hidari; dummy.x--; }
+	if (KeyDown(KEY_INPUT_D) == TRUE) { muki = muki_migi; dummy.x++; }
+
+	CollUpdateDivImage(&dummy);		//当たり判定の更新
+
+	if (CollMap(dummy.coll, map1_a) == FALSE) {
+		samplePlayerImg = dummy;	//ダミーの情報を戻す
+	}
 
 	return;
 }
@@ -450,6 +481,9 @@ VOID TitleDraw(VOID)
 		//x += 30;
 		//DrawFormatString(x, 500 + i * 20, GetColor(0, 0, 0), "%d", enemy[i].ATK);		//hp
 	}
+
+	//マップのサンプル
+	DrawMap(map1_a);
 
 	DrawString(0, 0, "タイトル画面", GetColor(0, 0, 0));
 	return;

@@ -137,6 +137,232 @@ BOOL LoadScoreData(const char* path, SCORE_DATA_SAMPLE* score, BOOL isHeader = F
 	return TRUE;
 }
 
+/// <summary>
+/// マップcsvファイルを読み込む
+/// </summary>
+/// <param name="imgPath">マップチップ画像ファイルのパス</param>
+/// <param name="downPath">下レイヤーファイルのパス</param>
+/// <param name="centerPath">中レイヤーのファイルのパス</param>
+/// <param name="centerColliderPath">中当たり判定レイヤーのファイルパス</param>
+/// <param name="upPath">上レイヤーのファイルパス</param>
+/// <param name="map">マップデータ構造体の先頭アドレス</param>
+/// <param name="divX">横の分割数</param>
+/// <param name="divY">縦の分割数</param>
+/// <returns></returns>
+BOOL LoadCsvMap(const char* imgPath,
+	const char* downPath, const char* centerPath, const char* centerColliderPath, const char* upPath,
+	MAP_DATA_SAMPLE* map, int divYoko, int divTate) {
+	//マップチップの読み込み
+	int isLoad = -1;
+
+	//一時的に画像のハンドルを用意する
+	int tempHandle = LoadGraph(imgPath);
+
+	//読み込みエラー
+	if (tempHandle == -1) {
+		MessageBox(
+			GetMainWindowHandle(),
+			imgPath,
+			"画像読み込みエラー",
+			MB_OK
+		);
+		return FALSE;
+	}
+
+	//画像の幅と高さを取得
+	int width = -1;
+	int height = -1;
+	GetGraphSize(tempHandle, &width, &height);
+
+	//分割して読み込み
+	isLoad = LoadDivGraph(
+		imgPath,
+		divYoko * divTate,
+		divYoko, divTate,
+		width / divYoko, height / divTate,
+		map->handle
+	);
+
+	//分割エラー
+	if (isLoad == -1) {
+		MessageBox(
+			GetMainWindowHandle(),
+			imgPath,
+			"画像分割エラー",
+			MB_OK
+		);
+
+		return FALSE;
+	}
+
+	//情報を設定
+	map->divMax = divYoko * divTate;
+	GetGraphSize(map->handle[0], &map->width, &map->height);
+
+	//画像を描画する
+	map->isDraw = TRUE;
+
+	//一時的に読み込んだハンドルを解放
+	DeleteGraph(tempHandle);
+
+	//==========================================
+
+	FILE* fp;					//ファイルポインタ
+	char getChar = '\0';		//取得する文字
+	int loopCnt = 0;			//ループカウンタ
+	errno_t fileErr = NULL;		//ファイル読み込みエラーを確認
+	int isEOF = NULL;			//ファイルの終わりかチェック
+
+	//下CSV読み込み==========================================
+
+	fileErr = fopen_s(&fp, downPath, "r");	//ファイルを読み込みモード(r)で開く
+	if (fileErr != NULL)
+	{
+		MessageBox(GetMainWindowHandle(), downPath, CSV_LOAD_ERR_TITLE, MB_OK);	//読み込みエラー
+		return FALSE;
+	}
+
+	//	↓ここから正常に読み込めた時の処理
+
+	loopCnt = 0;			//ループカウンタ
+	isEOF = NULL;		//ファイル読み込みエラーを確認
+
+	//実際にデータを格納する
+	while (isEOF != EOF)	//ファイルの最後ではないとき繰り返す
+	{
+		//csvのデータの1行分を読み取る
+		//fp = カーソルのイメージ
+		isEOF = fscanf_s(
+			fp,
+			CSV_MAP_FORMAT,
+			&map->csvDown[loopCnt / MAP1_YOKO_MAX][loopCnt % MAP1_YOKO_MAX]
+		);
+
+		//次のデータへ
+		loopCnt++;
+	}
+
+	fclose(fp);	//ファイルを閉じる
+
+	//中CSV読み込み==========================================
+
+	fileErr = fopen_s(&fp, centerPath, "r");	//ファイルを読み込みモード(r)で開く
+	if (fileErr != NULL)
+	{
+		MessageBox(GetMainWindowHandle(), centerPath, CSV_LOAD_ERR_TITLE, MB_OK);	//読み込みエラー
+		return FALSE;
+	}
+
+	//	↓ここから正常に読み込めた時の処理
+
+	loopCnt = 0;			//ループカウンタ
+	isEOF = NULL;		//ファイル読み込みエラーを確認
+
+	//実際にデータを格納する
+	while (isEOF != EOF)	//ファイルの最後ではないとき繰り返す
+	{
+		//csvのデータの1行分を読み取る
+		//fp = カーソルのイメージ
+		isEOF = fscanf_s(
+			fp,
+			CSV_MAP_FORMAT,
+			&map->csvCenter[loopCnt / MAP1_YOKO_MAX][loopCnt % MAP1_YOKO_MAX]
+		);
+
+		//次のデータへ
+		loopCnt++;
+	}
+
+	fclose(fp);	//ファイルを閉じる
+
+	//中当たり判定CSV読み込み==========================================
+
+	fileErr = fopen_s(&fp, centerColliderPath, "r");	//ファイルを読み込みモード(r)で開く
+	if (fileErr != NULL)
+	{
+		MessageBox(GetMainWindowHandle(), centerColliderPath, CSV_LOAD_ERR_TITLE, MB_OK);	//読み込みエラー
+		return FALSE;
+	}
+
+	//	↓ここから正常に読み込めた時の処理
+
+	loopCnt = 0;			//ループカウンタ
+	isEOF = NULL;		//ファイル読み込みエラーを確認
+
+	//実際にデータを格納する
+	while (isEOF != EOF)	//ファイルの最後ではないとき繰り返す
+	{
+		//csvのデータの1行分を読み取る
+		//fp = カーソルのイメージ
+		isEOF = fscanf_s(
+			fp,
+			CSV_MAP_FORMAT,
+			&map->csvCenterCollider[loopCnt / MAP1_YOKO_MAX][loopCnt % MAP1_YOKO_MAX]
+		);
+
+		//次のデータへ
+		loopCnt++;
+	}
+
+	fclose(fp);	//ファイルを閉じる
+
+	//上CSV読み込み==========================================
+
+	fileErr = fopen_s(&fp, upPath, "r");	//ファイルを読み込みモード(r)で開く
+	if (fileErr != NULL)
+	{
+		MessageBox(GetMainWindowHandle(), upPath, CSV_LOAD_ERR_TITLE, MB_OK);	//読み込みエラー
+		return FALSE;
+	}
+
+	//	↓ここから正常に読み込めた時の処理
+
+	loopCnt = 0;			//ループカウンタ
+	isEOF = NULL;		//ファイル読み込みエラーを確認
+
+	//実際にデータを格納する
+	while (isEOF != EOF)	//ファイルの最後ではないとき繰り返す
+	{
+		//csvのデータの1行分を読み取る
+		//fp = カーソルのイメージ
+		isEOF = fscanf_s(
+			fp,
+			CSV_MAP_FORMAT,
+			&map->csvUp[loopCnt / MAP1_YOKO_MAX][loopCnt % MAP1_YOKO_MAX]
+		);
+
+		//次のデータへ
+		loopCnt++;
+	}
+
+	fclose(fp);	//ファイルを閉じる
+
+	//マップの当たり判定を作成
+	for (int y = 0; y < MAP1_TATE_MAX; y++) {
+		for (int x = 0; x < MAP1_YOKO_MAX; x++) {
+			if (map->csvCenterCollider[y][x] == MAP_STOP_ID) {
+			//当たり判定を作成
+				map->coll[y][x].left = (x + 0) * map->width + 1;
+				map->coll[y][x].right = (x + 1) * map->width - 1;
+				map->coll[y][x].top = (y + 0) * map->height + 1;
+				map->coll[y][x].bottom = (y + 1) * map->height - 1;
+			}
+			else {
+				map->coll[y][x].left = 	  0;
+				map->coll[y][x].right =	  0;
+				map->coll[y][x].top = 	  0;
+				map->coll[y][x].bottom=   0;
+			}
+
+			//マップの場所を設定
+			map->x[y][x] = (x + 0) * map->width;
+			map->y[y][x] = (y + 0) * map->height;
+		}
+	}
+
+	return TRUE;
+}
+
 //スコアデータ作成
 BOOL CreateScoreData(VOID) 
 {
@@ -237,5 +463,74 @@ const char* GetScoreDataPath(VOID)
 VOID SetScoreDataPath(const char* path) 
 {
 	strcpyDx(scoreData.path, path);
+	return;
+}
+
+BOOL CollMap(RECT rect, MAP_DATA_SAMPLE map) {
+	for (int y = 0; y < MAP1_TATE_MAX; y++) {
+		for (int x = 0; x < MAP1_YOKO_MAX; x++) {
+			if (CheckCollRectToRect(rect, map.coll[y][x]) == TRUE) {
+				return TRUE;
+			}
+		}
+	}
+	return FALSE;
+}
+
+VOID DrawMap(MAP_DATA_SAMPLE map) {
+	//マップが描画できるときは
+	if (map.isDraw == TRUE) {
+		//下レイヤー描画
+		for (int y = 0; y < MAP1_TATE_MAX; y++) {
+			for (int x = 0; x < MAP1_YOKO_MAX; x++) {
+				//描画
+				DrawGraph(
+					map.x[y][x],
+					map.y[y][x],
+					map.handle[map.csvDown[y][x]], TRUE
+					//&map->csvDown[loopCnt / MAP1_YOKO_MAX][loopCnt % MAP1_YOKO_MAX]
+				);
+				
+			}
+		}
+
+		//中レイヤーの描画描画
+		for (int y = 0; y < MAP1_TATE_MAX; y++) {
+			for (int x = 0; x < MAP1_YOKO_MAX; x++) {
+				//描画
+				DrawGraph(
+					map.x[y][x],
+					map.y[y][x],
+					map.handle[map.csvCenter[y][x]], TRUE
+				);
+			}
+		}
+
+		//プレイヤーの画像を描画する
+		DrawDivImageChara(&samplePlayerImg);
+
+		//上レイヤーの描画
+		for (int y = 0; y < MAP1_TATE_MAX; y++) {
+			for (int x = 0; x < MAP1_YOKO_MAX; x++) {
+				//描画
+				DrawGraph(
+					map.x[y][x],
+					map.y[y][x],
+					map.handle[map.csvUp[y][x]], TRUE
+				);
+			}
+		}
+
+		//デバックモードではないときここで処理終了
+		if (GAME_DEBUG == FALSE) { return; }
+
+		//当たり判定を描画
+		for (int y = 0; y < MAP1_TATE_MAX; y++) {
+			for (int x = 0; x < MAP1_YOKO_MAX; x++) {
+				//描画
+				DrawRect(map.coll[y][x], GetColor(255, 255, 255), FALSE);
+			}
+		}
+	}
 	return;
 }
